@@ -7,12 +7,11 @@ from google import genai
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 
-# Konfigurasi Halaman Web App (Wajib paling atas)
+# Konfigurasi Halaman Web App
 st.set_page_config(
     page_title="AI Asisten Diskusi & Tugas UT", 
     page_icon="🌌", 
-    layout="wide",
-    initial_sidebar_state="expanded"
+    layout="wide"
 )
 
 # Custom CSS TINGKAT TINGGI (Futuristic Animated UI)
@@ -47,22 +46,23 @@ st.markdown("""
     }
     
     h1 {
-        font-size: 3rem !important;
+        font-size: 3.2rem !important;
         background: -webkit-linear-gradient(45deg, #3b82f6, #a855f7, #ec4899);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         text-shadow: 0px 0px 20px rgba(168, 85, 247, 0.4);
+        text-align: center;
+    }
+    
+    .subtitle {
+        text-align: center;
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+        color: #94a3b8 !important;
+        animation: fadeInUp 1s ease-out forwards;
     }
 
-    /* Efek Kaca (Glassmorphism) untuk Sidebar */
-    section[data-testid="stSidebar"] {
-        background: rgba(15, 23, 42, 0.6) !important;
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border-right: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    /* Glowing Button (Tombol Menyala) */
+    /* Glowing Button Lebar Penuh */
     .stButton>button {
         background: linear-gradient(90deg, #2563eb, #7c3aed);
         color: white !important;
@@ -75,6 +75,7 @@ st.markdown("""
         transition: all 0.4s ease;
         box-shadow: 0 0 15px rgba(124, 58, 237, 0.5);
         animation: fadeInUp 1s ease-out forwards;
+        width: 100%;
     }
     .stButton>button:hover {
         transform: scale(1.02) translateY(-3px);
@@ -100,25 +101,12 @@ st.markdown("""
 # Mengambil API Key dari Brankas (Secrets)
 api_key_input = st.secrets["GEMINI_API_KEY"]
 
-# Inisialisasi Session State
-if "history" not in st.session_state:
-  st.session_state.history = []
-
+# Bagian Judul Tengah (Centered Header)
 st.title("AI ASISTEN DISKUSI & TUGAS")
-st.markdown("🚀 **Sistem Pemrosesan Bahasa Akademik Terintegrasi** - Universitas Terbuka")
+st.markdown("<div class='subtitle'>🚀 Sistem Pemrosesan Bahasa Akademik Terintegrasi - Universitas Terbuka</div>", unsafe_allow_html=True)
 st.markdown("---")
 
-with st.sidebar:
-  st.header("📂 LOG RIWAYAT SESI")
-  if st.session_state.history:
-    for i, item in enumerate(st.session_state.history):
-      with st.expander(f"Data: {item['matkul']} ({item['jenis']})"):
-        st.caption(f"Timestamp: {item['waktu']}")
-        if st.button("Muat Data", key=f"hist_{i}"):
-          st.session_state.current_result = item["teks"]
-  else:
-    st.info("Log sistem masih kosong.")
-
+# Layout Parameter Pengguna (Lebih Seimbang)
 st.subheader("1. PARAMETER PENGGUNA")
 col1, col2 = st.columns(2)
 with col1:
@@ -126,22 +114,20 @@ with col1:
   prodi = st.text_input("Departemen/Prodi", placeholder="Ilmu Hukum")
 with col2:
   upbjj = st.text_input("Region/UPBJJ", placeholder="UPBJJ-UT")
-  nama_tutor = st.text_input("Tutor Target (Opsional)", placeholder="Nama Tutor")
+  mata_kuliah = st.text_input("Subjek Mata Kuliah", placeholder="Contoh: Pengantar Ilmu Hukum")
 
 st.markdown("---")
 
+# Layout Konfigurasi (4 Kolom Sejajar)
 st.subheader("2. KONFIGURASI ENGINE AI")
-col3, col4, col5 = st.columns(3)
+col3, col4, col5, col6 = st.columns(4)
 with col3:
-  jenis_tugas = st.selectbox(
-      "Tipe Tugas",
-      ["Diskusi Sesi 1", "Diskusi Sesi 2", "Diskusi Sesi 3", "Diskusi Sesi 4", "Diskusi Sesi 5", "Diskusi Sesi 6", "Diskusi Sesi 7", "Diskusi Sesi 8", "Tugas 1", "Tugas 2", "Tugas 3"],
-  )
-  mata_kuliah = st.text_input("Subjek Mata Kuliah", placeholder="Contoh: Pengantar Ilmu Hukum")
+  jenis_tugas = st.selectbox("Tipe Tugas", ["Diskusi Sesi 1", "Diskusi Sesi 2", "Diskusi Sesi 3", "Diskusi Sesi 4", "Diskusi Sesi 5", "Diskusi Sesi 6", "Diskusi Sesi 7", "Diskusi Sesi 8", "Tugas 1", "Tugas 2", "Tugas 3"])
 with col4:
   mode_jawaban = st.selectbox("Algoritma Jawaban", ["Standar", "Analisis Komprehensif", "Studi Literatur BMP"])
-  gaya_penulisan = st.selectbox("Gaya Bahasa", ["Akademik Natural", "Kritis Mendalam", "Praktis & Kasus"])
 with col5:
+  gaya_penulisan = st.selectbox("Gaya Bahasa", ["Akademik Natural", "Kritis Mendalam", "Praktis & Kasus"])
+with col6:
   target_kata = st.selectbox("Volume Output", ["Pendek (±150 kata)", "Menengah (±300 kata)", "Maksimal (600+ kata)"])
 
 st.markdown("---")
@@ -149,7 +135,8 @@ st.markdown("---")
 st.subheader("3. INPUT DATA MENTAH")
 soal_topik = st.text_area("Pindai Pertanyaan Topik:", placeholder="Tempelkan soal diskusi atau tugas di sini...", height=120)
 uploaded_file = st.file_uploader("Upload Dokumen Pendukung (Opsional)", type=["pdf", "png", "jpg", "jpeg"])
-st.markdown("---")
+
+st.markdown("<br>", unsafe_allow_html=True)
 
 # Tombol Eksekusi dengan Animasi
 if st.button("⚡ GENERATE DRAF AKADEMIK SEKARANG", type="primary"):
@@ -191,9 +178,7 @@ if st.button("⚡ GENERATE DRAF AKADEMIK SEKARANG", type="primary"):
         )
 
         st.session_state.current_result = header_identitas + response.text
-        st.session_state.history.append({"matkul": mata_kuliah, "jenis": jenis_tugas, "teks": st.session_state.current_result, "waktu": datetime.now().strftime("%Y-%m-%d %H:%M")})
         
-        # Animasi native Streamlit saat sukses!
         st.balloons()
         time.sleep(1)
 
@@ -212,17 +197,35 @@ if "current_result" in st.session_state:
     doc_io = io.BytesIO()
     doc.save(doc_io)
     doc_io.seek(0)
-    st.download_button("💾 EXPORT TO WORD", data=doc_io, file_name=f"Tugas_{mata_kuliah}.docx", mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+    st.download_button("💾 EXPORT TO WORD", data=doc_io, file_name=f"Tugas_{mata_kuliah}.docx", mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document", use_container_width=True)
 
   with col_dl2:
     pdf_io = io.BytesIO()
     c = canvas.Canvas(pdf_io, pagesize=letter)
     text_object = c.beginText(40, 750)
     text_object.setFont("Helvetica", 10)
+    
+    # Fitur Baru: Text Wrapping Otomatis untuk PDF
+    from textwrap import wrap
+    lines = []
     for line in st.session_state.current_result.split("\n"):
-      text_object.textLine(line)
+        wrapped = wrap(line, 95)
+        if not wrapped:
+            lines.append("")
+        else:
+            lines.extend(wrapped)
+            
+    for line in lines:
+        text_object.textLine(line)
+        # Buka halaman baru jika teks sudah sampai bawah
+        if text_object.getY() < 50:
+            c.drawText(text_object)
+            c.showPage()
+            text_object = c.beginText(40, 750)
+            text_object.setFont("Helvetica", 10)
+            
     c.drawText(text_object)
     c.showPage()
     c.save()
     pdf_io.seek(0)
-    st.download_button("💾 EXPORT TO PDF", data=pdf_io, file_name=f"Tugas_{mata_kuliah}.pdf", mime="application/pdf")
+    st.download_button("💾 EXPORT TO PDF", data=pdf_io, file_name=f"Tugas_{mata_kuliah}.pdf", mime="application/pdf", use_container_width=True)
