@@ -9,91 +9,106 @@ from reportlab.pdfgen import canvas
 
 # Konfigurasi Halaman Web App
 st.set_page_config(
-    page_title="AI Asisten Diskusi & Tugas UT", 
-    page_icon="🌌", 
+    page_title="AI Asisten UT", 
+    page_icon="✌️", 
     layout="wide"
 )
 
-# Custom CSS TINGKAT TINGGI (Futuristic Animated UI)
+# Custom CSS: Tema "Aesthetic Playful Gen-Z"
 st.markdown("""
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap');
+
     <style>
-    /* Animasi Latar Belakang Bergerak */
+    /* Animasi Latar Belakang Bergerak Soft Pastel */
     @keyframes gradientBG {
         0% {background-position: 0% 50%;}
         50% {background-position: 100% 50%;}
         100% {background-position: 0% 50%;}
     }
     
-    /* Animasi Elemen Muncul */
-    @keyframes fadeInUp {
-        from {opacity: 0; transform: translateY(30px);}
-        to {opacity: 1; transform: translateY(0);}
+    /* Animasi Elemen Muncul / Bouncy */
+    @keyframes popIn {
+        0% {opacity: 0; transform: scale(0.95) translateY(20px);}
+        100% {opacity: 1; transform: scale(1) translateY(0);}
     }
 
-    /* Terapkan Latar Belakang ke Seluruh Aplikasi */
+    /* Terapkan Latar Belakang & Font Poppins ke Seluruh Aplikasi */
     .stApp {
-        background: linear-gradient(-45deg, #0f172a, #1e1b4b, #000000, #172554);
+        background: linear-gradient(-45deg, #ff9a9e, #fecfef, #a1c4fd, #b2fcca);
         background-size: 400% 400%;
         animation: gradientBG 15s ease infinite;
-        color: #e2e8f0;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif !important;
+        color: #1e293b;
     }
     
-    /* Warna Teks Global */
-    h1, h2, h3, p, label {
-        color: #ffffff !important;
-        animation: fadeInUp 0.8s ease-out forwards;
+    /* Warna Teks Global agar kontras di background terang */
+    h1, h2, h3, p, label, .st-emotion-cache-16idsys p {
+        color: #334155 !important;
+        font-family: 'Poppins', sans-serif !important;
     }
     
+    /* Judul Utama Bergaya Kekinian */
     h1 {
-        font-size: 3.2rem !important;
-        background: -webkit-linear-gradient(45deg, #3b82f6, #a855f7, #ec4899);
+        font-weight: 800 !important;
+        font-size: 3.5rem !important;
+        background: linear-gradient(45deg, #ff0844 0%, #ffb199 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        text-shadow: 0px 0px 20px rgba(168, 85, 247, 0.4);
         text-align: center;
+        letter-spacing: -1px;
+        animation: popIn 0.6s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
     }
     
-    .subtitle {
+    .subtitle-container {
         text-align: center;
-        font-size: 1.2rem;
         margin-bottom: 2rem;
-        color: #94a3b8 !important;
-        animation: fadeInUp 1s ease-out forwards;
+        animation: popIn 0.8s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+    }
+    .subtitle {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #475569 !important;
+        background: rgba(255, 255, 255, 0.6);
+        padding: 8px 24px;
+        border-radius: 30px;
+        display: inline-block;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     }
 
-    /* Glowing Button Lebar Penuh */
+    /* Tombol Utama (Bouncy & Membulat/Pill Shape) */
     .stButton>button {
-        background: linear-gradient(90deg, #2563eb, #7c3aed);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white !important;
-        border: 1px solid rgba(255,255,255,0.2);
-        border-radius: 12px;
+        border: none;
+        border-radius: 50px; /* Bentuk kapsul/pill */
         padding: 0.8rem 2rem;
-        font-weight: bold;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        transition: all 0.4s ease;
-        box-shadow: 0 0 15px rgba(124, 58, 237, 0.5);
-        animation: fadeInUp 1s ease-out forwards;
+        font-weight: 600;
+        font-size: 1.1rem;
+        letter-spacing: 0.5px;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        box-shadow: 0 4px 15px rgba(118, 75, 162, 0.3);
         width: 100%;
+        animation: popIn 1s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
     }
     .stButton>button:hover {
-        transform: scale(1.02) translateY(-3px);
-        box-shadow: 0 0 30px rgba(124, 58, 237, 0.9);
-        border: 1px solid rgba(255,255,255,0.6);
+        transform: translateY(-5px) scale(1.03);
+        box-shadow: 0 10px 25px rgba(118, 75, 162, 0.5);
     }
 
-    /* Styling Kotak Input */
+    /* Styling Kotak Input (Frosted Glass Cerah) */
     .stTextInput>div>div>input, .stSelectbox>div>div>select, .stTextArea>div>div>textarea {
-        background: rgba(255, 255, 255, 0.05) !important;
-        border: 1px solid rgba(255, 255, 255, 0.2) !important;
-        color: #ffffff !important;
-        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.7) !important;
+        border: 2px solid rgba(255, 255, 255, 0.5) !important;
+        color: #1e293b !important;
+        border-radius: 15px;
         transition: all 0.3s;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
     }
     .stTextInput>div>div>input:focus, .stTextArea>div>div>textarea:focus {
-        border-color: #a855f7 !important;
-        box-shadow: 0 0 10px rgba(168, 85, 247, 0.5) !important;
+        border-color: #667eea !important;
+        background: rgba(255, 255, 255, 0.95) !important;
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2) !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -101,49 +116,49 @@ st.markdown("""
 # Mengambil API Key dari Brankas (Secrets)
 api_key_input = st.secrets["GEMINI_API_KEY"]
 
-# Bagian Judul Tengah (Centered Header)
-st.title("AI ASISTEN DISKUSI & TUGAS")
-st.markdown("<div class='subtitle'>🚀 Sistem Pemrosesan Bahasa Akademik Terintegrasi - Universitas Terbuka</div>", unsafe_allow_html=True)
+# Bagian Judul Tengah 
+st.title("✨ AI Asisten UT")
+st.markdown("<div class='subtitle-container'><div class='subtitle'>Bikin draf diskusi & tugas jadi lebih cepat, santai, dan rapi! 🚀</div></div>", unsafe_allow_html=True)
 st.markdown("---")
 
-# Layout Parameter Pengguna (Lebih Seimbang)
-st.subheader("1. PARAMETER PENGGUNA")
+# Layout Parameter Pengguna
+st.subheader("👤 Info Mahasiswa")
 col1, col2 = st.columns(2)
 with col1:
-  nama_mhs = st.text_input("Nama Pengguna", placeholder="Aditia Lindra Agasta")
-  prodi = st.text_input("Departemen/Prodi", placeholder="Ilmu Hukum")
+  nama_mhs = st.text_input("Nama Kamu", placeholder="Contoh: Aditia Lindra Agasta")
+  prodi = st.text_input("Program Studi", placeholder="Contoh: Ilmu Hukum")
 with col2:
-  upbjj = st.text_input("Region/UPBJJ", placeholder="UPBJJ-UT")
-  mata_kuliah = st.text_input("Subjek Mata Kuliah", placeholder="Contoh: Pengantar Ilmu Hukum")
+  upbjj = st.text_input("Asal UPBJJ", placeholder="Contoh: UPBJJ Semarang")
+  mata_kuliah = st.text_input("Mata Kuliah", placeholder="Contoh: Pengantar Ilmu Hukum")
 
 st.markdown("---")
 
-# Layout Konfigurasi (4 Kolom Sejajar)
-st.subheader("2. KONFIGURASI ENGINE AI")
+# Layout Konfigurasi AI
+st.subheader("⚙️ Atur Gaya Jawaban")
 col3, col4, col5, col6 = st.columns(4)
 with col3:
-  jenis_tugas = st.selectbox("Tipe Tugas", ["Diskusi Sesi 1", "Diskusi Sesi 2", "Diskusi Sesi 3", "Diskusi Sesi 4", "Diskusi Sesi 5", "Diskusi Sesi 6", "Diskusi Sesi 7", "Diskusi Sesi 8", "Tugas 1", "Tugas 2", "Tugas 3"])
+  jenis_tugas = st.selectbox("Ini Untuk Apa?", ["Diskusi Sesi 1", "Diskusi Sesi 2", "Diskusi Sesi 3", "Diskusi Sesi 4", "Diskusi Sesi 5", "Diskusi Sesi 6", "Diskusi Sesi 7", "Diskusi Sesi 8", "Tugas 1", "Tugas 2", "Tugas 3"])
 with col4:
-  mode_jawaban = st.selectbox("Algoritma Jawaban", ["Standar", "Analisis Komprehensif", "Studi Literatur BMP"])
+  mode_jawaban = st.selectbox("Level Jawaban", ["Standar (Aman)", "Pro (Mendalam)", "Full Jurnal/BMP"])
 with col5:
-  gaya_penulisan = st.selectbox("Gaya Bahasa", ["Akademik Natural", "Kritis Mendalam", "Praktis & Kasus"])
+  gaya_penulisan = st.selectbox("Gaya Bahasa", ["Asik & Natural", "Kritis (Kaya Anak BEM)", "Banyak Contoh Kasus"])
 with col6:
-  target_kata = st.selectbox("Volume Output", ["Pendek (±150 kata)", "Menengah (±300 kata)", "Maksimal (600+ kata)"])
+  target_kata = st.selectbox("Panjang Teks", ["Pendek Aja (±150)", "Sedang (±300)", "Panjang (600+)"])
 
 st.markdown("---")
 
-st.subheader("3. INPUT DATA MENTAH")
-soal_topik = st.text_area("Pindai Pertanyaan Topik:", placeholder="Tempelkan soal diskusi atau tugas di sini...", height=120)
-uploaded_file = st.file_uploader("Upload Dokumen Pendukung (Opsional)", type=["pdf", "png", "jpg", "jpeg"])
+st.subheader("📚 Masukin Soalnya Di Sini")
+soal_topik = st.text_area("Copy-Paste Pertanyaan / Bahan Diskusi:", placeholder="Paste soal dari e-learning UT ke sini ya...", height=120)
+uploaded_file = st.file_uploader("Atau Upload Gambar Soal/PDF (Opsional)", type=["pdf", "png", "jpg", "jpeg"])
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# Tombol Eksekusi dengan Animasi
-if st.button("⚡ GENERATE DRAF AKADEMIK SEKARANG", type="primary"):
+# Tombol Eksekusi
+if st.button("✨ BIKIN JAWABAN SEKARANG ✨", type="primary"):
   if not soal_topik and not uploaded_file:
-    st.warning("ERROR: Input data mentah tidak ditemukan.")
+    st.warning("Eits, masukin soalnya dulu dong sebelum klik tombol! 😅")
   else:
-    with st.spinner("🤖 Mengkalibrasi data... Menyusun referensi BMP... Menganalisis..."):
+    with st.spinner("⏳ Bentar ya, AI lagi mikir keras sambil buka-buka BMP..."):
       try:
         client = genai.Client(api_key=api_key_input)
         contents_payload = []
@@ -152,14 +167,15 @@ if st.button("⚡ GENERATE DRAF AKADEMIK SEKARANG", type="primary"):
           contents_payload.append({"mime_type": uploaded_file.type, "data": uploaded_file.getvalue()})
 
         prompt_sistem = f"""
-        Anda adalah asisten akademik cerdas untuk mahasiswa Universitas Terbuka. 
+        Anda adalah asisten akademik super cerdas dan santai untuk mahasiswa Universitas Terbuka. 
         Tugas Anda adalah membuat draf jawaban untuk mata kuliah {mata_kuliah} pada bagian {jenis_tugas}.
         
         ATURAN MUTLAK:
-        1. DILARANG KERAS menggunakan emoji atau format bintang (**) berlebihan. Gunakan teks paragraf/penomoran rapi.
-        2. Gaya penulisan harus natural mahasiswa UT, tata bahasa formal, analitis, mendalam.
-        3. WAJIB menyertakan "Sumber Referensi" di bagian paling bawah (Buku Materi Pokok (BMP) {mata_kuliah} dan perundangan terkait).
-        4. Mode: {mode_jawaban}, Gaya: {gaya_penulisan}, Volume: {target_kata}.
+        1. DILARANG KERAS menggunakan emoji pada isi jawaban akademik agar bisa langsung di-copy-paste ke web e-learning.
+        2. Dilarang menggunakan format bintang (**) berlebihan. Gunakan format paragraf/penomoran yang sangat rapi.
+        3. Gaya penulisan: {gaya_penulisan}. Harus natural seolah-olah mahasiswa sungguhan yang menulis, tidak kaku seperti robot, tapi tetap formal dan berbobot secara akademik.
+        4. WAJIB menyertakan "Sumber Referensi" di bagian paling bawah (Buku Materi Pokok (BMP) {mata_kuliah} dan perundangan terkait).
+        5. Mode: {mode_jawaban}, Volume: {target_kata}.
         
         Soal:
         {soal_topik}
@@ -183,12 +199,12 @@ if st.button("⚡ GENERATE DRAF AKADEMIK SEKARANG", type="primary"):
         time.sleep(1)
 
       except Exception as e:
-        st.error(f"SYSTEM FAILURE: {e}")
+        st.error(f"Yah, ada error dari sistemnya: {e}")
 
 if "current_result" in st.session_state:
   st.markdown("---")
-  st.subheader("TERMINAL OUTPUT: SIAP DISALIN")
-  st.text_area("Pratinjau Hasil Generate:", value=st.session_state.current_result, height=400)
+  st.subheader("🎉 Yeay! Draf Jawaban Udah Jadi")
+  st.text_area("Silakan Copy dari sini:", value=st.session_state.current_result, height=400)
 
   col_dl1, col_dl2 = st.columns(2)
   with col_dl1:
@@ -197,7 +213,7 @@ if "current_result" in st.session_state:
     doc_io = io.BytesIO()
     doc.save(doc_io)
     doc_io.seek(0)
-    st.download_button("💾 EXPORT TO WORD", data=doc_io, file_name=f"Tugas_{mata_kuliah}.docx", mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document", use_container_width=True)
+    st.download_button("📝 Download format Word", data=doc_io, file_name=f"Tugas_{mata_kuliah}.docx", mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document", use_container_width=True)
 
   with col_dl2:
     pdf_io = io.BytesIO()
@@ -205,7 +221,7 @@ if "current_result" in st.session_state:
     text_object = c.beginText(40, 750)
     text_object.setFont("Helvetica", 10)
     
-    # Fitur Baru: Text Wrapping Otomatis untuk PDF
+    # Text Wrapping Otomatis
     from textwrap import wrap
     lines = []
     for line in st.session_state.current_result.split("\n"):
@@ -217,7 +233,6 @@ if "current_result" in st.session_state:
             
     for line in lines:
         text_object.textLine(line)
-        # Buka halaman baru jika teks sudah sampai bawah
         if text_object.getY() < 50:
             c.drawText(text_object)
             c.showPage()
@@ -228,4 +243,4 @@ if "current_result" in st.session_state:
     c.showPage()
     c.save()
     pdf_io.seek(0)
-    st.download_button("💾 EXPORT TO PDF", data=pdf_io, file_name=f"Tugas_{mata_kuliah}.pdf", mime="application/pdf", use_container_width=True)
+    st.download_button("📄 Download format PDF", data=pdf_io, file_name=f"Tugas_{mata_kuliah}.pdf", mime="application/pdf", use_container_width=True)
