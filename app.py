@@ -84,11 +84,7 @@ st.markdown("---")
 # Sidebar untuk Pengaturan dan Riwayat
 with st.sidebar:
   st.header("Pengaturan & Kunci")
-  api_key_input = st.text_input(
-      "Google Gemini API Key:",
-      type="password",
-      placeholder="Tempel API Key di sini...",
-  )
+  api_key_input = st.secrets["GEMINI_API_KEY"]
   
   st.markdown("---")
   st.header("Riwayat Sesi")
