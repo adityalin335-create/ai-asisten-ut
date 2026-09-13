@@ -14,26 +14,22 @@ st.set_page_config(
     layout="wide"
 )
 
-# Custom CSS: Tema "Clean Modern SaaS" (Sesuai Referensi UI/UX)
+# Custom CSS: Tema "Clean Modern SaaS"
 st.markdown("""
     <style>
-    /* Mengimpor font Inter ke dalam blok CSS agar tidak bocor ke layar */
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-    /* Latar Belakang Gradasi Soft (Peach ke Light Blue) */
     .stApp {
         background: linear-gradient(135deg, #fff3e0 0%, #f3e8ff 50%, #e0f2fe 100%);
         font-family: 'Inter', sans-serif !important;
         color: #1e293b;
     }
     
-    /* Warna Teks Global */
     h1, h2, h3, p, label, .st-emotion-cache-16idsys p {
         color: #334155 !important;
         font-family: 'Inter', sans-serif !important;
     }
     
-    /* Judul Utama */
     h1 {
         font-weight: 700 !important;
         font-size: 2.8rem !important;
@@ -50,7 +46,6 @@ st.markdown("""
         margin-bottom: 3rem;
     }
 
-    /* Styling Subheader */
     h3 {
         font-weight: 600 !important;
         color: #1e293b !important;
@@ -60,7 +55,6 @@ st.markdown("""
         padding-bottom: 8px;
     }
 
-    /* Tombol Utama (Solid Blue, Clean) */
     .stButton>button {
         background-color: #2563eb !important;
         color: white !important;
@@ -79,7 +73,6 @@ st.markdown("""
         box-shadow: 0 6px 12px rgba(37, 99, 235, 0.3) !important;
     }
 
-    /* Styling Kotak Input (Putih Bersih, Border Halus) */
     .stTextInput>div>div>input, .stSelectbox>div>div>select, .stTextArea>div>div>textarea {
         background-color: #ffffff !important;
         border: 1px solid #cbd5e1 !important;
@@ -90,14 +83,12 @@ st.markdown("""
         transition: all 0.2s ease-in-out !important;
     }
     
-    /* Efek Saat Kotak Input Diklik (Focus) - Garis Biru */
     .stTextInput>div>div>input:focus, .stSelectbox>div>div>select:focus, .stTextArea>div>div>textarea:focus {
         border-color: #3b82f6 !important;
         box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
         outline: none !important;
     }
 
-    /* Styling Kotak Upload File (Dropzone) */
     [data-testid="stFileUploadDropzone"] {
         background-color: #ffffff !important;
         border: 2px dashed #94a3b8 !important;
@@ -113,7 +104,7 @@ api_key_input = st.secrets["GEMINI_API_KEY"]
 st.title("AI Asisten Akademik UT")
 st.markdown("<div class='subtitle'>Sistem perumusan draf tugas & diskusi forum terstruktur</div>", unsafe_allow_html=True)
 
-# Layout Form
+# Layout Form Identitas
 st.subheader("Informasi Mahasiswa")
 col1, col2 = st.columns(2)
 with col1:
@@ -125,16 +116,17 @@ with col2:
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-st.subheader("Pengaturan Draf Jawaban")
+# Layout Form Pengaturan (4 Kolom Rapi)
+st.subheader("Pengaturan Kendali Draf")
 col3, col4, col5, col6 = st.columns(4)
 with col3:
   jenis_tugas = st.selectbox("Jenis Kegiatan", ["Diskusi Sesi 1", "Diskusi Sesi 2", "Diskusi Sesi 3", "Diskusi Sesi 4", "Diskusi Sesi 5", "Diskusi Sesi 6", "Diskusi Sesi 7", "Diskusi Sesi 8", "Tugas 1", "Tugas 2", "Tugas 3"])
 with col4:
-  mode_jawaban = st.selectbox("Kualitas Jawaban", ["Standar", "Komprehensif", "Studi Referensi BMP"])
+  kualitas = st.selectbox("Kualitas Analisis", ["Standar (Aman)", "Pro (Mendalam)", "Full Jurnal / BMP"])
 with col5:
-  gaya_penulisan = st.selectbox("Gaya Bahasa", ["Natural & Mengalir", "Analitis & Kritis", "Praktis (Banyak Contoh)"])
+  gaya = st.selectbox("Gaya Bahasa", ["Natural & Mengalir", "Analitis & Kritis", "Praktis & Studi Kasus"])
 with col6:
-  target_kata = st.selectbox("Target Panjang", ["Singkat (±150 Kata)", "Menengah (±300 Kata)", "Panjang (600+ Kata)"])
+  panjang = st.selectbox("Target Panjang", ["Singkat (±150 Kata)", "Menengah (±300 Kata)", "Panjang (600+ Kata)"])
 
 st.markdown("<br>", unsafe_allow_html=True)
 
@@ -149,7 +141,7 @@ if st.button("Generate Draf Jawaban", type="primary"):
   if not soal_topik and not uploaded_file:
     st.warning("Mohon masukkan pertanyaan atau unggah file terlebih dahulu.")
   else:
-    with st.spinner("Memproses data dan menyusun referensi akademik..."):
+    with st.spinner("Sistem sedang menganalisis tingkat kerumitan dan menyusun argumentasi..."):
       try:
         client = genai.Client(api_key=api_key_input)
         contents_payload = []
@@ -157,18 +149,25 @@ if st.button("Generate Draf Jawaban", type="primary"):
         if uploaded_file is not None:
           contents_payload.append({"mime_type": uploaded_file.type, "data": uploaded_file.getvalue()})
 
+        # LOGIK PROMPT DINAMIS: Otomatis mendeteksi pilihan untuk meningkatkan "Dewa" levelnya
         prompt_sistem = f"""
-        Anda adalah asisten akademik cerdas untuk mahasiswa Universitas Terbuka. 
+        Anda adalah asisten akademik tingkat lanjut untuk mahasiswa Universitas Terbuka. 
         Tugas Anda adalah membuat draf jawaban untuk mata kuliah {mata_kuliah} pada bagian {jenis_tugas}.
         
-        ATURAN MUTLAK:
-        1. DILARANG KERAS menggunakan emoji agar rapi saat disalin ke e-learning.
-        2. Dilarang menggunakan format bintang (**) berlebihan. Gunakan penomoran/paragraf biasa.
-        3. Gaya penulisan: {gaya_penulisan}. Harus menggunakan bahasa Indonesia yang baik, logis, dan khas mahasiswa.
-        4. WAJIB menyertakan "Sumber Referensi" di bagian paling bawah (mencakup Buku Materi Pokok (BMP) {mata_kuliah}).
-        5. Mode: {mode_jawaban}, Panjang: {target_kata}.
+        PARAMETER PENGENDALI:
+        - Tingkat Analisis: {kualitas}
+        - Gaya Bahasa: {gaya}
+        - Volume Teks: {panjang}
         
-        Soal:
+        INSTRUKSI KECERDASAN DINAMIS:
+        Jika parameter "Tingkat Analisis" disetel ke "Pro (Mendalam)" atau "Full Jurnal / BMP", Anda WAJIB melipatgandakan kerumitan argumen Anda. Gunakan istilah akademis tingkat tinggi, sitasi teori hukum/pasal-pasal secara presisi (jika relevan), dan lakukan analisis komprehensif layaknya pakar akademik. Semakin tinggi pilihan kualitas dan volume teks, semakin dalam pula rujukan teori yang harus Anda urai. Jika disetel "Standar", berikan jawaban yang lugas dan tepat sasaran.
+        
+        ATURAN MUTLAK FORMATTING:
+        1. DILARANG menggunakan emoji.
+        2. DILARANG menggunakan format bintang (**) berlebihan. Gunakan paragraf atau penomoran biasa (1., 2., 3.).
+        3. WAJIB menyertakan "Sumber Referensi" di baris paling bawah, mencakup Buku Materi Pokok (BMP) UT {mata_kuliah} dan aturan hukum terkait.
+        
+        Soal yang harus dipecahkan:
         {soal_topik}
         """
         
